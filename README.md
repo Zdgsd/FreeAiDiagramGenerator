@@ -1,11 +1,124 @@
-<div align="center">
+# Free AI Diagram Generator
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+**By Sadok B.**
 
-  <h1>Built with AI Studio</h2>
+Welcome to the **Free AI Diagram Generator**, the application that exists because manually aligning rectangles in PowerPoint is a specific circle of hell that no one should have to visit.
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+This tool uses the Google Gemini API to read your chaotic meeting notes, bug reports, or CSV files and instantly hallucinate—I mean, *generate*—structured, professional data visualizations. It renders them in D3.js so they look crisp, sharp, and like you spent four hours on them instead of four seconds.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## The "Why"
 
-</div>
+We built this because:
+1. You have data.
+2. Your boss loves diagrams.
+3. You love not making diagrams.
+
+This tool bridges that gap. It analyzes text, decides what chart fits best (Auto Mode), or lets you shout specific commands at it (Manual Mode), and then hands you a vector graphic you can copy-paste directly into that report you are procrastinating on.
+
+## Features
+
+### 1. Auto Analyst
+This is for the lazy genius. Drag and drop a CSV file, or paste a wall of text from a slack channel. The AI will:
+*   Read it.
+*   Understand it.
+*   Write an executive summary (so you don't have to).
+*   Decide which diagrams best represent the data.
+*   Render them.
+
+It's like having an intern who actually listens.
+
+### 2. Manual Generator
+For the control freaks. You select the diagram type, you type the prompt.
+*   "Pareto chart of reasons why the server crashed."
+*   "Fishbone diagram of why the coffee machine is always broken."
+*   "Timeline of the project we started three years ago and is still in 'discovery' phase."
+
+### 3. Supported Diagrams
+*   **Ishikawa (Fishbone)**: For root cause analysis. Ideal for figuring out who to blame.
+*   **Pareto Chart**: The 80/20 rule visualizer. Show management that 80% of problems come from 20% of the legacy code.
+*   **Timeline / Gantt**: Visual proof that the deadline was impossible.
+*   **Action Plan**: Circles connected to lines. Looks very productive.
+*   **Brainwriting**: Like brainstorming, but structured, so introverts can participate.
+*   **Mind Map**: A spiderweb of thoughts.
+*   **SWOT**: Strengths, Weaknesses, Opportunities, and "Threats" (usually competitors or lack of caffeine).
+*   **Radar Chart**: For comparing skills, like "Coding Ability" vs "Willingness to attend meetings".
+
+### 4. Dark Mode
+We included a Dark Mode because we know you are likely using this tool at 2 AM in a dark room. Your retinas are safe with us.
+
+### 5. Professional Export
+*   **Copy to Clipboard**: Copies a high-res PNG to your clipboard.
+*   **Download**: Saves a PNG file.
+*   **No Watermarks**: We aren't monsters.
+
+## Tech Stack
+
+We used the good stuff. No jQuery were harmed in the making of this app.
+
+*   **React 19**: The latest and greatest.
+*   **Tailwind CSS**: Because writing actual CSS is so 2015.
+*   **D3.js**: The math wizard behind the beautiful lines.
+*   **Google Gemini API**: The brain.
+*   **Vercel**: The host.
+
+## Installation & Setup
+
+If you want to run this locally and tinker with the code (or fix my bugs), follow these steps.
+
+### Prerequisites
+*   Node.js (Recent version).
+*   A terminal.
+*   A Google Cloud Project with the Gemini API enabled.
+*   A credit card (for the API key), though the free tier is usually generous enough for testing.
+
+### Steps
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/your-username/free-ai-diagram-generator.git
+    cd free-ai-diagram-generator
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+    *If this fails, try turning it off and on again.*
+
+3.  **Environment Setup**
+    Create a `.env` file in the root directory. You need one specific variable. Do not share this file with the internet unless you like paying for other people's API usage.
+
+    ```env
+    API_KEY=your_google_gemini_api_key_here
+    ```
+
+    *Note: The code uses `process.env.API_KEY` explicitly.*
+
+4.  **Run it**
+    ```bash
+    npm start
+    ```
+    Open your browser to `http://localhost:1234` (or whatever port Parcel/Vite/Webpack decides to use).
+
+## Deployment (Vercel)
+
+This app is "Vercel Ready".
+
+1.  Push your code to a Git repository.
+2.  Import the project into Vercel.
+3.  **Crucial Step**: In the Vercel Project Settings, go to **Environment Variables** and add `API_KEY` with your actual Google Gemini API key.
+4.  Hit Deploy.
+5.  Wait 30 seconds.
+6.  Profit.
+
+## A Note on Emojis
+
+You will notice a distinct lack of emojis in this application and documentation. This was a deliberate design choice to maintain a facade of extreme professionalism. We are serious people doing serious diagramming business.
+
+## License
+
+MIT. Do whatever you want with it. Clone it, sell it, turn it into an NFT (please don't). Just give credit to **Sadok B.** if you feel generous.
+
+---
+
+*Generated by a human who has spent too much time aligning text boxes.*

@@ -1,0 +1,5 @@
+{
+  "name": "Free AI Diagram Generator",
+  "description": "Professional tool to instantly generate structured Ishikawa (Fishbone), Pareto, Gantt, and other diagrams from text prompts using AI. Production ready.",
+  "requestFramePermissions": []
+}
