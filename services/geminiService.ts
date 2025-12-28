@@ -1,24 +1,36 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { DiagramData, DiagramType, FishboneData, ParetoData, ActionPlanData, BrainwritingData, MindMapData, SwotData, RadarData, TimelineData, DashboardResponse } from "../types";
 
-// Safely access API Key to prevent ReferenceError: process is not defined in some browser runtimes
-const getApiKey = () => {
+// Singleton instance to be initialized lazily
+let aiInstance: GoogleGenAI | null = null;
+
+// Helper to get the AI instance or throw a user-friendly error
+const getAI = (): GoogleGenAI => {
+  if (aiInstance) return aiInstance;
+
+  let apiKey = '';
   try {
-    if (typeof process !== 'undefined' && process.env) {
-      return process.env.API_KEY;
+    // 1. Check standard process.env (Node/CRA/Webpack)
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      apiKey = process.env.API_KEY;
     }
   } catch (e) {
-    // Ignore error
+    console.warn("Error accessing process.env:", e);
   }
-  return '';
-};
 
-const apiKey = getApiKey();
-const ai = new GoogleGenAI({ apiKey: apiKey });
+  if (!apiKey) {
+    throw new Error("API Key is missing. Please ensure 'API_KEY' is set in your Vercel Environment Variables.");
+  }
+
+  aiInstance = new GoogleGenAI({ apiKey });
+  return aiInstance;
+};
 
 // --- Unified Dashboard Generator ---
 
 export const analyzeDocument = async (context: string): Promise<DashboardResponse> => {
+  const ai = getAI();
+  
   // We ask the AI to decide what to build based on the data provided.
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
@@ -49,16 +61,12 @@ export const analyzeDocument = async (context: string): Promise<DashboardRespons
     `,
     config: {
       responseMimeType: "application/json",
-      // We use a loose schema here to allow polymorphism in the 'diagrams' array, 
-      // as strictly defining a union of 8 types in one schema can sometimes confuse the parser.
-      // We trust the model to follow the "type" instruction.
     }
   });
 
   const text = response.text;
   if (!text) throw new Error("No response from AI");
   
-  // Clean up potential markdown formatting if model adds it despite MIME type
   const jsonStr = text.replace(/```json/g, '').replace(/```/g, '');
   return JSON.parse(jsonStr) as DashboardResponse;
 };
@@ -87,6 +95,7 @@ export const generateDiagramData = async (prompt: string, type: DiagramType): Pr
 // --- Specific Generators ---
 
 const generateFishbone = async (prompt: string): Promise<FishboneData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate a detailed Ishikawa Fishbone Diagram data for: "${prompt}". 
@@ -105,6 +114,7 @@ const generateFishbone = async (prompt: string): Promise<FishboneData> => {
 };
 
 const generatePareto = async (prompt: string): Promise<ParetoData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate Pareto Chart data for: "${prompt}". Return JSON with title and items (name, value).`,
@@ -114,6 +124,7 @@ const generatePareto = async (prompt: string): Promise<ParetoData> => {
 };
 
 const generateActionPlan = async (prompt: string): Promise<ActionPlanData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate Action Plan data for: "${prompt}". Return JSON with centralTopic and nodes (title, items).`,
@@ -123,6 +134,7 @@ const generateActionPlan = async (prompt: string): Promise<ActionPlanData> => {
 };
 
 const generateBrainwriting = async (prompt: string): Promise<BrainwritingData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate Brainwriting table for: "${prompt}". Return JSON with topic, columns, and rows (participant, ideas).`,
@@ -132,6 +144,7 @@ const generateBrainwriting = async (prompt: string): Promise<BrainwritingData> =
 };
 
 const generateMindMap = async (prompt: string): Promise<MindMapData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate Mind Map data for: "${prompt}". Return JSON with centralTopic and nodes (title, items).`,
@@ -141,6 +154,7 @@ const generateMindMap = async (prompt: string): Promise<MindMapData> => {
 };
 
 const generateSwot = async (prompt: string): Promise<SwotData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate a SWOT Analysis for: "${prompt}".
@@ -156,6 +170,7 @@ const generateSwot = async (prompt: string): Promise<SwotData> => {
 };
 
 const generateRadar = async (prompt: string): Promise<RadarData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate Radar/Spider Chart data for: "${prompt}".
@@ -168,6 +183,7 @@ const generateRadar = async (prompt: string): Promise<RadarData> => {
 };
 
 const generateTimeline = async (prompt: string): Promise<TimelineData> => {
+  const ai = getAI();
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `Generate a Project Timeline/Gantt data for: "${prompt}".
