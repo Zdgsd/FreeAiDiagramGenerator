@@ -15,12 +15,32 @@ const getAI = (): GoogleGenAI => {
                  || import.meta.env?.VITE_API_KEY 
                  || '';
 
-  if (!apiKey) {
-    throw new Error("API Key is missing. Please check your Vercel Environment Variables (API_KEY).");
+  if (!apiKey || apiKey.includes("your_google_gemini_api_key")) {
+    throw new Error("Invalid API Key. Please configure your Vercel Environment Variable 'API_KEY' with a valid Google Gemini API Key.");
   }
 
-  aiInstance = new GoogleGenAI({ apiKey });
+  try {
+    aiInstance = new GoogleGenAI({ apiKey });
+  } catch (e: any) {
+    console.error("Failed to initialize GoogleGenAI client:", e);
+    throw new Error(`Failed to initialize AI client: ${e.message}`);
+  }
+  
   return aiInstance;
+};
+
+// --- Helper: Safe JSON Parse ---
+const safeParseJSON = <T>(text: string, errorContext: string): T => {
+  try {
+    // 1. Strip markdown code blocks if present
+    const cleanText = text.replace(/```json/g, '').replace(/```/g, '').trim();
+    // 2. Parse
+    return JSON.parse(cleanText) as T;
+  } catch (e) {
+    console.error(`JSON Parse Error [${errorContext}]:`, e);
+    console.debug("Raw Text:", text);
+    throw new Error(`The AI generated an invalid response structure. Please try again or rephrase your input. (${errorContext})`);
+  }
 };
 
 // --- Unified Dashboard Generator ---
@@ -28,43 +48,52 @@ const getAI = (): GoogleGenAI => {
 export const analyzeDocument = async (context: string): Promise<DashboardResponse> => {
   const ai = getAI();
   
-  const response = await ai.models.generateContent({
-    model: 'gemini-3-flash-preview',
-    contents: `You are an expert Data Analyst and Visualization Architect.
-    
-    Here is a raw dataset or document content:
-    """
-    ${context.substring(0, 20000)} 
-    """
-    (Input truncated to 20k chars if too long)
+  if (!context || context.trim().length < 10) {
+    throw new Error("Input text is too short to analyze. Please provide more detail.");
+  }
 
-    Tasks:
-    1. Analyze the content.
-    2. Provide a short executive summary (max 2 sentences).
-    3. Generate a JSON object containing a list of 1 to 4 distinct diagrams that best visualize this data.
-    
-    Rules for selecting diagrams:
-    - If there is time-series data or a schedule -> TIMELINE.
-    - If there are numerical comparisons or frequencies -> PARETO.
-    - If there are multi-variable scores (skills, performance attributes) -> RADAR.
-    - If there is a root cause analysis text -> FISHBONE.
-    - If there is strategic planning -> SWOT or ACTION_PLAN.
-    - If there is brainstorming -> MIND_MAP or BRAINWRITING.
+  let response;
+  try {
+    response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `You are an expert Data Analyst and Visualization Architect.
+      
+      Here is a raw dataset or document content:
+      """
+      ${context.substring(0, 20000)} 
+      """
+      (Input truncated to 20k chars if too long)
 
-    Return a JSON with "title", "summary", and "diagrams" (an array).
-    Each item in "diagrams" must have a "type" field matching one of: FISHBONE, PARETO, ACTION_PLAN, BRAINWRITING, MIND_MAP, SWOT, RADAR, TIMELINE.
-    Structure each diagram data object according to standard schema for that type.
-    `,
-    config: {
-      responseMimeType: "application/json",
-    }
-  });
+      Tasks:
+      1. Analyze the content.
+      2. Provide a short executive summary (max 2 sentences).
+      3. Generate a JSON object containing a list of 1 to 4 distinct diagrams that best visualize this data.
+      
+      Rules for selecting diagrams:
+      - If there is time-series data or a schedule -> TIMELINE.
+      - If there are numerical comparisons or frequencies -> PARETO.
+      - If there are multi-variable scores (skills, performance attributes) -> RADAR.
+      - If there is a root cause analysis text -> FISHBONE.
+      - If there is strategic planning -> SWOT or ACTION_PLAN.
+      - If there is brainstorming -> MIND_MAP or BRAINWRITING.
+
+      Return a JSON with "title", "summary", and "diagrams" (an array).
+      Each item in "diagrams" must have a "type" field matching one of: FISHBONE, PARETO, ACTION_PLAN, BRAINWRITING, MIND_MAP, SWOT, RADAR, TIMELINE.
+      Structure each diagram data object according to standard schema for that type.
+      `,
+      config: {
+        responseMimeType: "application/json",
+      }
+    });
+  } catch (e: any) {
+    console.error("AI Request Failed:", e);
+    throw new Error(`AI Service Error: ${e.message || "Unknown error occurred during generation."}`);
+  }
 
   const text = response.text;
-  if (!text) throw new Error("No response from AI");
+  if (!text) throw new Error("No text response received from AI.");
   
-  const jsonStr = text.replace(/```json/g, '').replace(/```/g, '');
-  return JSON.parse(jsonStr) as DashboardResponse;
+  return safeParseJSON<DashboardResponse>(text, "Dashboard Analysis");
 };
 
 // --- Single Generator (Legacy / Manual Mode) ---
@@ -82,8 +111,12 @@ export const generateDiagramData = async (prompt: string, type: DiagramType): Pr
       case DiagramType.FISHBONE: 
       default: return await generateFishbone(prompt);
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error generating diagram data:", error);
+    // Re-throw with user friendly message if possible
+    if (error.message.includes("SAFETY")) {
+      throw new Error("The content was blocked by AI safety filters. Please verify your prompt is appropriate.");
+    }
     throw error;
   }
 };
@@ -106,7 +139,7 @@ const generateFishbone = async (prompt: string): Promise<FishboneData> => {
     Provide comprehensive lists of items for each category where relevant.`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.FISHBONE };
+  return { ...safeParseJSON<FishboneData>(response.text!, "Fishbone"), type: DiagramType.FISHBONE };
 };
 
 const generatePareto = async (prompt: string): Promise<ParetoData> => {
@@ -116,7 +149,7 @@ const generatePareto = async (prompt: string): Promise<ParetoData> => {
     contents: `Generate Pareto Chart data for: "${prompt}". Return JSON with title and items (name, value).`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.PARETO };
+  return { ...safeParseJSON<ParetoData>(response.text!, "Pareto"), type: DiagramType.PARETO };
 };
 
 const generateActionPlan = async (prompt: string): Promise<ActionPlanData> => {
@@ -126,7 +159,7 @@ const generateActionPlan = async (prompt: string): Promise<ActionPlanData> => {
     contents: `Generate Action Plan data for: "${prompt}". Return JSON with centralTopic and nodes (title, items).`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.ACTION_PLAN };
+  return { ...safeParseJSON<ActionPlanData>(response.text!, "ActionPlan"), type: DiagramType.ACTION_PLAN };
 };
 
 const generateBrainwriting = async (prompt: string): Promise<BrainwritingData> => {
@@ -136,7 +169,7 @@ const generateBrainwriting = async (prompt: string): Promise<BrainwritingData> =
     contents: `Generate Brainwriting table for: "${prompt}". Return JSON with topic, columns, and rows (participant, ideas).`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.BRAINWRITING };
+  return { ...safeParseJSON<BrainwritingData>(response.text!, "Brainwriting"), type: DiagramType.BRAINWRITING };
 };
 
 const generateMindMap = async (prompt: string): Promise<MindMapData> => {
@@ -146,7 +179,7 @@ const generateMindMap = async (prompt: string): Promise<MindMapData> => {
     contents: `Generate Mind Map data for: "${prompt}". Return JSON with centralTopic and nodes (title, items).`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.MIND_MAP };
+  return { ...safeParseJSON<MindMapData>(response.text!, "MindMap"), type: DiagramType.MIND_MAP };
 };
 
 const generateSwot = async (prompt: string): Promise<SwotData> => {
@@ -162,7 +195,7 @@ const generateSwot = async (prompt: string): Promise<SwotData> => {
     - threats (array of strings)`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.SWOT };
+  return { ...safeParseJSON<SwotData>(response.text!, "SWOT"), type: DiagramType.SWOT };
 };
 
 const generateRadar = async (prompt: string): Promise<RadarData> => {
@@ -175,7 +208,7 @@ const generateRadar = async (prompt: string): Promise<RadarData> => {
     Return JSON with: title, axes [{label, value}].`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.RADAR };
+  return { ...safeParseJSON<RadarData>(response.text!, "Radar"), type: DiagramType.RADAR };
 };
 
 const generateTimeline = async (prompt: string): Promise<TimelineData> => {
@@ -187,5 +220,5 @@ const generateTimeline = async (prompt: string): Promise<TimelineData> => {
     Return JSON with: title, events [{date, title, description}].`,
     config: { responseMimeType: "application/json" }
   });
-  return { ...JSON.parse(response.text!), type: DiagramType.TIMELINE };
+  return { ...safeParseJSON<TimelineData>(response.text!, "Timeline"), type: DiagramType.TIMELINE };
 };

@@ -15,7 +15,7 @@ import { DiagramData, DiagramStatus, DiagramType, FishboneData, ParetoData, Acti
 import { 
   Download, Copy, RefreshCw, Wand2, UploadCloud, 
   LayoutDashboard, HelpCircle, Sparkles, AlertCircle,
-  Moon, Sun, CheckCircle2
+  Moon, Sun, CheckCircle2, XCircle
 } from 'lucide-react';
 
 export default function App() {
@@ -52,6 +52,7 @@ export default function App() {
       setStatus(DiagramStatus.LOADING);
       setError(null);
       setDiagrams([]);
+      setDashboardSummary("Reading file...");
       
       try {
         const textContent = await parseFile(file);
@@ -98,6 +99,7 @@ export default function App() {
       setDiagrams(dashboard.diagrams);
       setStatus(DiagramStatus.SUCCESS);
     } catch (err: any) {
+      console.error(err);
       setError(err.message || "Analysis failed.");
       setStatus(DiagramStatus.ERROR);
     }
@@ -405,12 +407,18 @@ export default function App() {
 
         {/* Error Alert */}
         {error && (
-          <div className={`max-w-4xl mx-auto border p-4 rounded-xl shadow-sm flex items-start gap-3 animate-slide-up ${isDarkMode ? 'bg-red-900/20 border-red-800 text-red-300' : 'bg-red-50 border-red-200 text-red-700'}`}>
-            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-            <div>
-               <p className="font-bold">Generation Failed</p>
-               <p className="text-sm opacity-90">{error}</p>
+          <div className={`max-w-4xl mx-auto border p-4 rounded-xl shadow-sm flex items-start gap-4 animate-slide-up ${isDarkMode ? 'bg-red-950/40 border-red-800 text-red-200' : 'bg-red-50 border-red-200 text-red-700'}`}>
+            <AlertCircle className="w-6 h-6 shrink-0 mt-0.5 text-red-500" />
+            <div className="flex-grow">
+               <p className="font-bold text-lg mb-1">Generation Failed</p>
+               <p className="text-sm opacity-90 leading-relaxed mb-2">{error}</p>
+               <p className="text-xs opacity-75">
+                 Tip: If you see a JSON error, try simplifying your text or removing special characters.
+               </p>
             </div>
+            <button onClick={() => setError(null)} className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded-full transition">
+              <XCircle className="w-5 h-5 opacity-50" />
+            </button>
           </div>
         )}
 
