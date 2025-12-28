@@ -1,25 +1,22 @@
 import { GoogleGenAI } from "@google/genai";
 import { DiagramData, DiagramType, FishboneData, ParetoData, ActionPlanData, BrainwritingData, MindMapData, SwotData, RadarData, TimelineData, DashboardResponse } from "../types";
 
-// Singleton instance to be initialized lazily
+// Singleton instance
 let aiInstance: GoogleGenAI | null = null;
 
-// Helper to get the AI instance or throw a user-friendly error
 const getAI = (): GoogleGenAI => {
   if (aiInstance) return aiInstance;
 
-  let apiKey = '';
-  try {
-    // 1. Check standard process.env (Node/CRA/Webpack)
-    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-      apiKey = process.env.API_KEY;
-    }
-  } catch (e) {
-    console.warn("Error accessing process.env:", e);
-  }
+  // With the Vite config 'define', process.env.API_KEY is replaced by the actual string at build time.
+  // We add a fallback check for development environments.
+  // @ts-ignore
+  const apiKey = (typeof process !== 'undefined' && process.env?.API_KEY) 
+                 // @ts-ignore
+                 || import.meta.env?.VITE_API_KEY 
+                 || '';
 
   if (!apiKey) {
-    throw new Error("API Key is missing. Please ensure 'API_KEY' is set in your Vercel Environment Variables.");
+    throw new Error("API Key is missing. Please check your Vercel Environment Variables (API_KEY).");
   }
 
   aiInstance = new GoogleGenAI({ apiKey });
@@ -31,7 +28,6 @@ const getAI = (): GoogleGenAI => {
 export const analyzeDocument = async (context: string): Promise<DashboardResponse> => {
   const ai = getAI();
   
-  // We ask the AI to decide what to build based on the data provided.
   const response = await ai.models.generateContent({
     model: 'gemini-3-flash-preview',
     contents: `You are an expert Data Analyst and Visualization Architect.
