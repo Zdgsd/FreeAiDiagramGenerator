@@ -32,7 +32,7 @@ export default function App() {
   
   const [status, setStatus] = useState<DiagramStatus>(DiagramStatus.IDLE);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Refs for exporting (Keyed by index)
   const svgRefs = useRef<{ [key: number]: SVGSVGElement | null }>({});
 
@@ -264,7 +264,7 @@ export default function App() {
               <LayoutDashboard className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className={`text-xl font-bold tracking-tight leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Free AI Diagram Generator</h1>
+              <h1 className={`text-xl font-bold tracking-tight leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>AI Diagram Gen</h1>
               <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">By Sadok B.</p>
             </div>
           </div>
@@ -292,12 +292,12 @@ export default function App() {
         {/* Hero & Input Section */}
         <section className="flex flex-col gap-8 items-center max-w-4xl mx-auto">
            <div className="text-center space-y-4">
-             <h2 className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
-               What would you like to <span className="text-blue-600 dark:text-blue-400">visualize</span>?
+             <h1 className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+               Turn Text into <span className="text-blue-600 dark:text-blue-400">Charts & Diagrams</span>
+             </h1>
+             <h2 className={`text-lg max-w-2xl mx-auto leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+               The free AI Ishikawa, Pareto, and Gantt generator. Paste your meeting notes, bug reports, or CSV data and get professional visualizations instantly.
              </h2>
-             <p className={`text-lg max-w-2xl mx-auto leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
-               Transform text, meeting notes, or data into professional Fishbone, Pareto, and Gantt charts instantly using advanced AI.
-             </p>
            </div>
 
            <div className={`w-full rounded-2xl shadow-xl overflow-hidden transform transition-all hover:shadow-2xl duration-500 border ${isDarkMode ? 'bg-slate-800 border-slate-700 shadow-slate-900/50' : 'bg-white border-slate-200 shadow-slate-200/50 hover:shadow-slate-200/60'}`}>
@@ -313,7 +313,7 @@ export default function App() {
                    }`}
                  >
                    <Sparkles className="w-4 h-4" />
-                   Auto Analyst
+                   Auto Analyst (Smart)
                  </button>
                  <button 
                    onClick={() => setMode('MANUAL')}
@@ -402,6 +402,7 @@ export default function App() {
                   </div>
               </div>
            </div>
+           
         </section>
 
         {/* Error Alert */}
