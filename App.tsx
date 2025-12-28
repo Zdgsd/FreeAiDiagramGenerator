@@ -14,7 +14,7 @@ import { Footer } from './components/Footer';
 import { DiagramData, DiagramStatus, DiagramType, FishboneData, ParetoData, ActionPlanData, BrainwritingData, MindMapData, SwotData, RadarData, TimelineData } from './types';
 import { 
   Download, Copy, RefreshCw, Wand2, UploadCloud, 
-  LayoutDashboard, HelpCircle, Sparkles, AlertCircle,
+  Network, HelpCircle, Sparkles, AlertCircle,
   Moon, Sun, CheckCircle2, XCircle
 } from 'lucide-react';
 
@@ -259,11 +259,10 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-xl shadow-lg ${isDarkMode ? 'bg-blue-600 shadow-blue-900/20' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-200'}`}>
-              <LayoutDashboard className="w-5 h-5 text-white" />
+              <Network className="w-5 h-5 text-white" />
             </div>
             <div>
               <h1 className={`text-lg sm:text-xl font-bold tracking-tight leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>AI Diagram Gen</h1>
-              <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">By Sadok B.</p>
             </div>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
