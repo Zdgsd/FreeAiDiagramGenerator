@@ -137,10 +137,6 @@ export default function App() {
       clone.style.height = finalHeight + 'px';
       clone.style.backgroundColor = isDarkMode ? "#1e293b" : "#ffffff";
       
-      // Ensure text visibility in export by forcing colors if needed, 
-      // but usually SVG attributes handle this. 
-      // Note: Dark mode export will have dark background.
-      
       return { clone, width: finalWidth, height: finalHeight };
   }
 
@@ -258,17 +254,17 @@ export default function App() {
       
       {/* Navbar */}
       <header className={`border-b sticky top-0 z-30 shadow-sm backdrop-blur-md transition-colors duration-300 ${isDarkMode ? 'bg-slate-900/90 border-slate-800' : 'bg-white/90 border-slate-200'}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-xl shadow-lg ${isDarkMode ? 'bg-blue-600 shadow-blue-900/20' : 'bg-gradient-to-br from-blue-600 to-indigo-600 shadow-blue-200'}`}>
               <LayoutDashboard className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className={`text-xl font-bold tracking-tight leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>AI Diagram Gen</h1>
-              <p className="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">By Sadok B.</p>
+              <h1 className={`text-lg sm:text-xl font-bold tracking-tight leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>AI Diagram Gen</h1>
+              <p className="text-[10px] sm:text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">By Sadok B.</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
              <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className={`p-2 rounded-full transition-colors ${isDarkMode ? 'text-yellow-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}
@@ -281,21 +277,21 @@ export default function App() {
                className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${isDarkMode ? 'text-slate-300 hover:bg-slate-800 hover:text-white' : 'text-slate-600 hover:bg-slate-100'}`}
              >
                <HelpCircle className="w-4 h-4" />
-               Guide & Types
+               Guide
              </button>
           </div>
         </div>
       </header>
 
-      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-12">
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-8 sm:space-y-12">
         
         {/* Hero & Input Section */}
         <section className="flex flex-col gap-8 items-center max-w-4xl mx-auto">
-           <div className="text-center space-y-4">
-             <h1 className={`text-4xl sm:text-5xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+           <div className="text-center space-y-4 px-2">
+             <h1 className={`text-3xl sm:text-5xl font-extrabold tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
                Turn Text into <span className="text-blue-600 dark:text-blue-400">Charts & Diagrams</span>
              </h1>
-             <h2 className={`text-lg max-w-2xl mx-auto leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+             <h2 className={`text-base sm:text-lg max-w-2xl mx-auto leading-relaxed ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
                The free AI Ishikawa, Pareto, and Gantt generator. Paste your meeting notes, bug reports, or CSV data and get professional visualizations instantly.
              </h2>
            </div>
@@ -313,7 +309,8 @@ export default function App() {
                    }`}
                  >
                    <Sparkles className="w-4 h-4" />
-                   Auto Analyst (Smart)
+                   <span className="hidden sm:inline">Auto Analyst</span>
+                   <span className="sm:hidden">Auto</span>
                  </button>
                  <button 
                    onClick={() => setMode('MANUAL')}
@@ -324,11 +321,12 @@ export default function App() {
                    }`}
                  >
                    <CheckCircle2 className="w-4 h-4" />
-                   Manual Generator
+                   <span className="hidden sm:inline">Manual Generator</span>
+                   <span className="sm:hidden">Manual</span>
                  </button>
               </div>
 
-              <div className="p-6 sm:p-8 space-y-6">
+              <div className="p-4 sm:p-8 space-y-6">
                  {/* Manual Chips */}
                  {mode === 'MANUAL' && (
                     <div className="flex flex-wrap gap-2 animate-fade-in">
@@ -336,7 +334,7 @@ export default function App() {
                         <button
                           key={t}
                           onClick={() => setDiagramType(t)}
-                          className={`px-4 py-2 rounded-full text-xs font-bold border transition-all duration-200 ${
+                          className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-bold border transition-all duration-200 ${
                             diagramType === t 
                             ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/30 scale-105' 
                             : (isDarkMode ? 'bg-slate-800 text-slate-300 border-slate-600 hover:border-blue-500 hover:bg-slate-700' : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:bg-slate-50')
@@ -351,7 +349,7 @@ export default function App() {
                   <div className="relative group">
                     <textarea
                       rows={6}
-                      className={`block w-full rounded-xl border sm:text-base p-4 transition-all resize-none leading-relaxed focus:ring-4 ${
+                      className={`block w-full rounded-xl border text-sm sm:text-base p-4 transition-all resize-none leading-relaxed focus:ring-4 ${
                           isDarkMode 
                           ? 'bg-slate-900 border-slate-700 text-slate-200 placeholder:text-slate-500 focus:border-blue-500 focus:ring-blue-500/20' 
                           : 'bg-slate-50 border-slate-200 text-slate-700 placeholder:text-slate-400 focus:bg-white focus:border-blue-500 focus:ring-blue-500/10'
@@ -367,8 +365,8 @@ export default function App() {
                     {mode === 'AUTO' && !prompt && (
                       <div className="absolute inset-0 top-12 bottom-4 left-4 right-4 pointer-events-none flex items-center justify-center opacity-40 group-hover:opacity-60 transition-opacity">
                          <div className="flex flex-col items-center gap-2">
-                           <UploadCloud className={`w-10 h-10 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`} />
-                           <span className={`text-sm font-medium ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Or drag & drop text files</span>
+                           <UploadCloud className={`w-8 h-8 sm:w-10 sm:h-10 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`} />
+                           <span className={`text-xs sm:text-sm font-medium ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Or drag & drop text files</span>
                          </div>
                       </div>
                     )}
@@ -376,7 +374,7 @@ export default function App() {
 
                   <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                     {mode === 'AUTO' ? (
-                      <label className={`cursor-pointer inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border transition-all text-sm font-medium shadow-sm group ${
+                      <label className={`w-full sm:w-auto cursor-pointer inline-flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-xl border transition-all text-sm font-medium shadow-sm group ${
                           isDarkMode
                           ? 'bg-slate-800 border-slate-600 hover:bg-slate-700 hover:border-slate-500 text-slate-300'
                           : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700'
@@ -386,7 +384,7 @@ export default function App() {
                         <input type="file" accept=".csv,.xlsx,.xls,.txt,.json" className="hidden" onChange={handleFileUpload} />
                       </label>
                     ) : (
-                      <div className={`text-xs font-medium italic ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
+                      <div className={`hidden sm:block text-xs font-medium italic ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>
                         * Be specific with categories for best results
                       </div>
                     )}
@@ -421,8 +419,8 @@ export default function App() {
           <div className={`space-y-8 animate-fade-in pt-8 border-t ${isDarkMode ? 'border-slate-800' : 'border-slate-200'}`}>
             <div className="text-center space-y-2">
               <span className={`text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest ${isDarkMode ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-50 text-blue-700'}`}>Analysis Results</span>
-              <h2 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{dashboardTitle}</h2>
-              <p className={`max-w-3xl mx-auto ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{dashboardSummary}</p>
+              <h2 className={`text-2xl sm:text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{dashboardTitle}</h2>
+              <p className={`max-w-3xl mx-auto text-sm sm:text-base ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>{dashboardSummary}</p>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -431,16 +429,16 @@ export default function App() {
                   <div className={`rounded-2xl shadow-sm border hover:shadow-xl transition-shadow duration-500 overflow-hidden flex flex-col h-full ${isDarkMode ? 'bg-slate-850 border-slate-700' : 'bg-white border-slate-200'}`}>
                     
                     {/* Card Header */}
-                    <div className={`flex items-center justify-between px-6 py-4 border-b ${isDarkMode ? 'bg-slate-850 border-slate-700' : 'bg-white border-slate-100'}`}>
+                    <div className={`flex items-center justify-between px-4 sm:px-6 py-4 border-b ${isDarkMode ? 'bg-slate-850 border-slate-700' : 'bg-white border-slate-100'}`}>
                       <div className="flex items-center gap-3">
-                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDarkMode ? 'bg-slate-800 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
+                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDarkMode ? 'bg-slate-800 text-blue-400' : 'bg-blue-50 text-blue-600'}`}>
                             {diag.type === DiagramType.FISHBONE && <span className="font-bold text-xs">FB</span>}
                             {diag.type === DiagramType.PARETO && <span className="font-bold text-xs">PA</span>}
                             {diag.type === DiagramType.TIMELINE && <span className="font-bold text-xs">TL</span>}
                             {diag.type === DiagramType.SWOT && <span className="font-bold text-xs">SW</span>}
                             {!['FISHBONE','PARETO','TIMELINE','SWOT'].includes(diag.type) && <span className="font-bold text-xs">DG</span>}
                          </div>
-                         <h3 className={`font-semibold text-sm sm:text-base ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
+                         <h3 className={`font-semibold text-sm sm:text-base truncate ${isDarkMode ? 'text-slate-200' : 'text-slate-800'}`}>
                            {diag.type.replace(/_/g, ' ')}
                          </h3>
                       </div>
@@ -464,9 +462,14 @@ export default function App() {
                       </div>
                     </div>
 
-                    {/* Chart Area */}
-                    <div className={`p-6 flex-grow flex items-center justify-center min-h-[400px] ${isDarkMode ? 'bg-slate-900/50' : 'bg-slate-50/30'}`}>
-                      {renderChart(diag, idx)}
+                    {/* Chart Area - Mobile Responsive Wrapper */}
+                    <div className={`p-0 sm:p-6 flex-grow flex flex-col items-center justify-center min-h-[400px] ${isDarkMode ? 'bg-slate-900/50' : 'bg-slate-50/30'}`}>
+                      {/* Horizontal Scroll Container for Mobile */}
+                      <div className="w-full overflow-x-auto scrollbar-hide py-4 px-2 sm:px-0">
+                         <div className="min-w-[600px] md:min-w-0 flex justify-center">
+                            {renderChart(diag, idx)}
+                         </div>
+                      </div>
                     </div>
                     
                   </div>

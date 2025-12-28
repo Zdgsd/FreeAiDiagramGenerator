@@ -1,7 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { DiagramData, DiagramType, FishboneData, ParetoData, ActionPlanData, BrainwritingData, MindMapData, SwotData, RadarData, TimelineData, DashboardResponse } from "../types";
 
-const apiKey = process.env.API_KEY;
+// Safely access API Key to prevent ReferenceError: process is not defined in some browser runtimes
+const getApiKey = () => {
+  try {
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env.API_KEY;
+    }
+  } catch (e) {
+    // Ignore error
+  }
+  return '';
+};
+
+const apiKey = getApiKey();
 const ai = new GoogleGenAI({ apiKey: apiKey });
 
 // --- Unified Dashboard Generator ---
