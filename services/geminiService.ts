@@ -8,15 +8,12 @@ const getAI = (): GoogleGenAI => {
   if (aiInstance) return aiInstance;
 
   // With the Vite config 'define', process.env.API_KEY is replaced by the actual string at build time.
-  // We add a fallback check for development environments.
+  // We access it directly to ensure the replacement value ("AIza...") is used.
   // @ts-ignore
-  const apiKey = (typeof process !== 'undefined' && process.env?.API_KEY) 
-                 // @ts-ignore
-                 || import.meta.env?.VITE_API_KEY 
-                 || '';
+  const apiKey = process.env.API_KEY || '';
 
   if (!apiKey || apiKey.includes("your_google_gemini_api_key")) {
-    throw new Error("Invalid API Key. Please configure your Vercel Environment Variable 'API_KEY' with a valid Google Gemini API Key.");
+    throw new Error("Invalid API Key. Please check your .env file.");
   }
 
   try {
