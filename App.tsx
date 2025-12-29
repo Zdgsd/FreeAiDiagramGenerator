@@ -1,14 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
 import { generateDiagramData, analyzeDocument } from './services/geminiService';
 import { parseFile } from './utils/fileParser';
 import { DiagramCard } from './components/DiagramCard';
 import { InputConsole } from './components/InputConsole';
 import { Documentation } from './components/Documentation';
+import { ReadmeModal } from './components/ReadmeModal';
 import { Footer } from './components/Footer';
 import { DiagramData, DiagramStatus, DiagramType } from './types';
 import { 
-  Network, HelpCircle, Moon, Sun, AlertCircle, XCircle
+  Network, HelpCircle, Moon, Sun, AlertCircle, XCircle, BookOpen
 } from 'lucide-react';
 
 export default function App() {
@@ -16,6 +16,7 @@ export default function App() {
   const [prompt, setPrompt] = useState('');
   const [diagramType, setDiagramType] = useState<DiagramType>(DiagramType.FISHBONE);
   const [isDocsOpen, setIsDocsOpen] = useState(false);
+  const [isReadmeOpen, setIsReadmeOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   // Dashboard State
@@ -101,6 +102,7 @@ export default function App() {
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
       <Documentation isOpen={isDocsOpen} onClose={() => setIsDocsOpen(false)} isDarkMode={isDarkMode} />
+      <ReadmeModal isOpen={isReadmeOpen} onClose={() => setIsReadmeOpen(false)} isDarkMode={isDarkMode} />
       
       {/* Navbar */}
       <header className={`border-b sticky top-0 z-40 backdrop-blur-xl transition-colors duration-300 ${isDarkMode ? 'bg-slate-950/80 border-slate-800' : 'bg-white/80 border-slate-200'}`}>
@@ -118,6 +120,15 @@ export default function App() {
              >
                 {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
              </button>
+             
+             <button 
+               onClick={() => setIsReadmeOpen(true)}
+               className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${isDarkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-200 text-slate-600 hover:bg-slate-100'}`}
+             >
+               <BookOpen className="w-4 h-4" />
+               READ ME
+             </button>
+
              <button 
                onClick={() => setIsDocsOpen(true)}
                className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border transition-all ${isDarkMode ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-slate-200 text-slate-600 hover:bg-slate-100'}`}
