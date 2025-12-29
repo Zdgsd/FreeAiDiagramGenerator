@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { select } from 'd3';
+import * as d3 from 'd3';
 import { BrainwritingData } from '../types';
 
 interface BrainwritingChartProps {
@@ -23,7 +23,7 @@ export const BrainwritingChart: React.FC<BrainwritingChartProps> = ({
     const rows = data.rows || [];
     if (columns.length === 0 || rows.length === 0) return;
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     const colors = {
@@ -118,7 +118,7 @@ export const BrainwritingChart: React.FC<BrainwritingChartProps> = ({
 
   function wrapText(textSelection: any, width: number, lineHeight: number) {
     textSelection.each(function(this: any) {
-      const text = select(this);
+      const text = d3.select(this);
       const content = text.text();
       if (!content) return;
       const words = content.split(/\s+/).reverse();

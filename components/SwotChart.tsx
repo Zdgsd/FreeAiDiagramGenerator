@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { select } from 'd3';
+import * as d3 from 'd3';
 import { SwotData } from '../types';
 
 interface SwotChartProps {
@@ -22,7 +22,7 @@ export const SwotChart: React.FC<SwotChartProps> = ({
   useEffect(() => {
     if (!data || !svgRef.current) return;
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     const margin = { top: 60, right: 20, bottom: 20, left: 20 };

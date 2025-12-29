@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { select, scaleBand, scaleLinear, max, axisLeft, axisRight, axisBottom, line, curveMonotoneX } from 'd3';
+import * as d3 from 'd3';
 import { ParetoData } from '../types';
 
 interface ParetoChartProps {
@@ -24,7 +24,7 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({
     const items = data.items || [];
     if (items.length === 0) return;
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     const colors = {
@@ -71,24 +71,24 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({
       .attr("fill", colors.textMain) 
       .text(data.title || "Pareto Chart");
 
-    const x = scaleBand()
+    const x = d3.scaleBand()
       .domain(processedData.map(d => d.name))
       .range([0, innerWidth])
       .padding(0.3);
 
-    const y1 = scaleLinear()
-      .domain([0, max(processedData, d => d.value) || 0])
+    const y1 = d3.scaleLinear()
+      .domain([0, d3.max(processedData, d => d.value) || 0])
       .nice()
       .range([innerHeight, 0]);
 
-    const y2 = scaleLinear()
+    const y2 = d3.scaleLinear()
       .domain([0, 100])
       .range([innerHeight, 0]);
 
     // Grid
     g.append("g")
       .attr("class", "grid")
-      .call(axisLeft(y1).tickSize(-innerWidth).tickFormat(() => ""))
+      .call(d3.axisLeft(y1).tickSize(-innerWidth).tickFormat(() => ""))
       .call(g => g.select(".domain").remove())
       .selectAll("line")
       .attr("stroke", isDarkMode ? "#334155" : "#e2e8f0");
@@ -96,7 +96,7 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({
     // X Axis
     const xAxisGroup = g.append("g")
       .attr("transform", `translate(0,${innerHeight})`)
-      .call(axisBottom(x).tickSize(0).tickPadding(10));
+      .call(d3.axisBottom(x).tickSize(0).tickPadding(10));
     
     xAxisGroup.select(".domain").attr("stroke", colors.axis);
     xAxisGroup.selectAll("text")
@@ -109,7 +109,7 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({
 
     // Left Y Axis
     const yAxisLeft = g.append("g")
-      .call(axisLeft(y1).ticks(5).tickSize(0).tickPadding(10));
+      .call(d3.axisLeft(y1).ticks(5).tickSize(0).tickPadding(10));
     
     yAxisLeft.select(".domain").remove();
     yAxisLeft.selectAll("text")
@@ -131,7 +131,7 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({
     // Right Y Axis
     const yAxisRight = g.append("g")
       .attr("transform", `translate(${innerWidth},0)`)
-      .call(axisRight(y2).tickFormat(d => d + "%").tickSize(0).tickPadding(10));
+      .call(d3.axisRight(y2).tickFormat(d => d + "%").tickSize(0).tickPadding(10));
 
     yAxisRight.select(".domain").remove();
     yAxisRight.selectAll("text")
@@ -178,10 +178,10 @@ export const ParetoChart: React.FC<ParetoChartProps> = ({
       .text(d => d.value);
 
     // Line
-    const lineGenerator = line<typeof processedData[0]>()
+    const lineGenerator = d3.line<typeof processedData[0]>()
       .x(d => (x(d.name) || 0) + x.bandwidth() / 2)
       .y(d => y2(d.cumulativePercentage))
-      .curve(curveMonotoneX);
+      .curve(d3.curveMonotoneX);
 
     g.append("path")
       .datum(processedData)

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { select } from 'd3';
+import * as d3 from 'd3';
 import { FishboneData } from '../types';
 
 interface FishboneChartProps {
@@ -25,7 +25,7 @@ export const FishboneChart: React.FC<FishboneChartProps> = ({
     const categories = data.categories || [];
     if (categories.length === 0) return;
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     // --- 2. Dynamic Layout Calculation ---
@@ -37,10 +37,15 @@ export const FishboneChart: React.FC<FishboneChartProps> = ({
     const RIB_SPACING_X = 400; 
     const TEXT_BUFFER_LEFT = 220; 
     
+    // Increased gap to head to prevent text overlap with the main problem box
+    const GAP_TO_HEAD = 320; 
+
     const ribLength = Math.max(MIN_RIB_LEN, (maxItemsInCat * ITEM_Y_SPACING) + 120);
     const ribHorizProj = ribLength * Math.cos(RIB_ANGLE_RAD);
     const numPairs = Math.ceil(categories.length / 2);
-    const spineRibSpan = (Math.max(0, numPairs - 1) * RIB_SPACING_X) + 120; 
+    
+    const spineRibSpan = (Math.max(0, numPairs - 1) * RIB_SPACING_X) + GAP_TO_HEAD; 
+    
     const marginLeft = 50;
     const headX = marginLeft + TEXT_BUFFER_LEFT + ribHorizProj + spineRibSpan;
     const HEAD_SHAPE_WIDTH = 260;
@@ -145,7 +150,9 @@ export const FishboneChart: React.FC<FishboneChartProps> = ({
     categories.forEach((cat, i) => {
       const pairIndex = Math.floor(i / 2);
       const isTop = i % 2 === 0;
-      const spineAttachX = headX - 120 - (pairIndex * RIB_SPACING_X);
+      
+      // Calculate attachment point with the gap constant
+      const spineAttachX = headX - GAP_TO_HEAD - (pairIndex * RIB_SPACING_X);
       
       const dx = -Math.cos(RIB_ANGLE_RAD) * ribLength;
       const dy = isTop ? -Math.sin(RIB_ANGLE_RAD) * ribLength : Math.sin(RIB_ANGLE_RAD) * ribLength;
@@ -241,7 +248,7 @@ export const FishboneChart: React.FC<FishboneChartProps> = ({
 
   function wrapText(textSelection: any, width: number) {
     textSelection.each(function(this: any) {
-      const text = select(this);
+      const text = d3.select(this);
       const content = text.text();
       if (!content) return;
       const words = content.split(/\s+/).reverse();

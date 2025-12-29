@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { select, scalePoint } from 'd3';
+import * as d3 from 'd3';
 import { TimelineData } from '../types';
 
 interface TimelineChartProps {
@@ -24,7 +24,7 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
     const eventsRaw = data.events || [];
     if (eventsRaw.length === 0) return;
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     const colors = {
@@ -65,7 +65,7 @@ export const TimelineChart: React.FC<TimelineChartProps> = ({
       .attr("x1", 0).attr("y1", lineY).attr("x2", innerWidth).attr("y2", lineY)
       .attr("stroke", colors.line).attr("stroke-width", 4).attr("stroke-linecap", "round");
 
-    const xScale = scalePoint()
+    const xScale = d3.scalePoint()
         .domain(events.map((_, i) => i.toString()))
         .range([50, innerWidth - 50])
         .padding(0.5);

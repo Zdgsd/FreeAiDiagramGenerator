@@ -13,7 +13,7 @@ const getAI = (): GoogleGenAI => {
   const apiKey = process.env.API_KEY || '';
 
   if (!apiKey || apiKey.includes("your_google_gemini_api_key")) {
-    throw new Error("Invalid API Key. Please check your .env file.");
+    throw new Error("Missing API Key. For local dev, check .env. For production (Vercel), check Settings > Environment Variables.");
   }
 
   try {

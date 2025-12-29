@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { select } from 'd3';
+import * as d3 from 'd3';
 import { MindMapData } from '../types';
 
 interface MindMapChartProps {
@@ -24,7 +24,7 @@ export const MindMapChart: React.FC<MindMapChartProps> = ({
     const nodes = data.nodes || [];
     if (nodes.length === 0) return;
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     const colors = {
@@ -132,7 +132,7 @@ export const MindMapChart: React.FC<MindMapChartProps> = ({
 
   function wrapText(textSelection: any, width: number) {
     textSelection.each(function(this: any) {
-      const text = select(this);
+      const text = d3.select(this);
       const content = text.text();
       if (!content) return;
       const words = content.split(/\s+/).reverse();

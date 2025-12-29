@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { select } from 'd3';
+import * as d3 from 'd3';
 import { ActionPlanData } from '../types';
 
 interface ActionPlanChartProps {
@@ -24,7 +24,7 @@ export const ActionPlanChart: React.FC<ActionPlanChartProps> = ({
     const nodes = data.nodes || [];
     if (nodes.length === 0) return;
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     const colors = {
@@ -181,7 +181,7 @@ export const ActionPlanChart: React.FC<ActionPlanChartProps> = ({
 
   function wrapText(textSelection: any, width: number) {
     textSelection.each(function(this: any) {
-      const text = select(this);
+      const text = d3.select(this);
       const content = text.text();
       if (!content) return;
       const words = content.split(/\s+/).reverse();
@@ -198,7 +198,7 @@ export const ActionPlanChart: React.FC<ActionPlanChartProps> = ({
         }
       }
       const shift = (lineNumber * lineHeight) / 2;
-      text.selectAll("tspan").attr("dy", function(this: any) { return (parseFloat(select(this).attr("dy")) - shift) + "em"; });
+      text.selectAll("tspan").attr("dy", function(this: any) { return (parseFloat(d3.select(this).attr("dy")) - shift) + "em"; });
     });
   }
 

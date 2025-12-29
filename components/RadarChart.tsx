@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { select, scaleLinear, lineRadial, curveLinearClosed } from 'd3';
+import * as d3 from 'd3';
 import { RadarData } from '../types';
 
 interface RadarChartProps {
@@ -24,7 +24,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
     const axes = data.axes || [];
     if (axes.length < 3) return; 
 
-    const svg = select(svgRef.current);
+    const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
     const colors = {
@@ -52,7 +52,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
       .attr("fill", colors.title).text(data.title || "Radar Chart");
 
     const levels = 5;
-    const rScale = scaleLinear().domain([0, 100]).range([0, radius]);
+    const rScale = d3.scaleLinear().domain([0, 100]).range([0, radius]);
     const axisGrid = g.append("g").attr("class", "axisWrapper");
 
     for (let level = 0; level < levels; level++) {
@@ -86,10 +86,10 @@ export const RadarChart: React.FC<RadarChartProps> = ({
       .text(d => d.label || "").attr("font-family", "'Inter', sans-serif")
       .attr("font-weight", "600").attr("fill", colors.label);
 
-    const radarLine = lineRadial<any>()
+    const radarLine = d3.lineRadial<any>()
       .radius(d => rScale(d.value || 0))
       .angle((d, i) => i * angleSlice)
-      .curve(curveLinearClosed);
+      .curve(d3.curveLinearClosed);
 
     g.append("path")
       .datum(axes).attr("d", radarLine)
